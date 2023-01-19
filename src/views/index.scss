@@ -1,0 +1,173 @@
+$color-primary: #2ec4b6;
+
+$color-primary-shadow: #cbf3f0;
+
+$color-primary-bg: #cbf3f080;
+
+$color-deep-primary: #ff9f1c;
+
+$color-deep-primary-shadow: #ffbf69;
+
+$color-deep-primary-bg: #ffbf6980;
+
+$color-font: #333;
+
+$font-size: 14px;
+
+$font-size-title: 16px;
+
+$border-radius: 6px;
+
+$distance: 18px;
+
+
+html body {
+    margin: 0;
+    padding: 0;
+}
+.excel-card-container {
+    border: 1px solid $color-primary;
+    background: $color-primary-bg;
+    color: $color-font;
+    width: 100%;
+    position: relative;
+    font-size: $font-size;
+    font-weight: 500;
+    text-align: center;
+    padding: 15px 20px;
+    box-sizing: border-box;
+    margin-bottom: $distance;
+
+    &:hover {
+        background: $color-primary-shadow;
+    }
+
+    .loading {
+        width: 100%;
+        height: 100%;
+        position: absolute;
+        background-color: #fff;
+        left: 0;
+        top: 0;
+
+        img {
+            width: 40px;
+            height: 40px;
+            transform: translateY(-20px) translateX(-20px);
+            position: absolute;
+            top: 50%;
+            left: 50%;
+        }
+    }
+
+    .flex-container {
+        display: flex;
+        align-items: baseline;
+    }
+
+    .excel-index {
+        font-size: 18px;
+        font-weight: bold;
+        padding: 10px;
+        height: 100%;
+        border-right: 1px solid #eee;
+        margin-right: 20px;
+    }
+
+    .excel-sheet-tag {
+        padding: 4px 5px;
+        font-size: 14px;
+        border: 1px solid $color-deep-primary;
+        margin-right: 10px;
+        background: $color-deep-primary-bg;
+        border-radius: $border-radius;
+    }
+
+    .tag-info-container {
+        margin-top: 20px;
+        cursor: pointer;
+
+        .tag-list {
+            margin-left: 10px;
+        }
+    }
+}
+
+.upload-container {
+    border-radius: 8px;
+    border: 1px solid #eee;
+    height: 61px;
+    width: 100%;
+    position: relative;
+    font-size: 14px;
+    font-weight: 500;
+    line-height: 61px;
+    text-align: center;
+
+    .file-input {
+        width: 100%;
+        height: 100%;
+        opacity: 0;
+        position: absolute;
+        z-index: 2;
+        left: 0;
+        cursor: pointer;
+    }
+}
+
+.model-container {
+    .mask {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: #ccc;
+        opacity: 0;
+        transition: opacity 200ms ease-in-out, visibility 200ms ease-in-out;
+        visibility: hidden;
+    }
+
+    .left-container {
+        width: 400px;
+        position: absolute;
+        height: 100%;
+        overflow-y: auto;
+        overflow-x: hidden;
+        left: -400px;
+        top: 0;
+        transition: left 200ms ease-in-out;
+        background: #fff;
+        z-index: 100;
+    }
+
+    &.visible {
+        display: block;
+
+        .mask {
+            opacity: .8;
+            visibility: visible;
+        }
+
+        .left-container {
+            left: 0;
+        }
+    }
+}
+
+.body-header{
+    color: $color-font;
+    width: 100%;
+    height: 80px;
+    box-shadow: 0 4px 10px 0px #ccc;
+    box-sizing: border-box;
+    padding: 0 $distance;
+    background-image: linear-gradient(to top, #e6e9f0 0%, #eef1f5 100%);
+
+    .model-open{
+        font-size: $font-size-title;
+        font-weight: bold;
+        line-height: 80px;
+        cursor: pointer;
+    }
+}

@@ -25,7 +25,7 @@ import ExcelCard from "./views/ExcelCard.vue";
 import FileUpload from "./views/FileUpload.vue";
 import Model from "./views/Model.vue";
 import "./views/index.scss";
-import { ExcelAnalysis } from "./excel/ExecelAnalysis";
+import { ExcelAnalysis } from "./excel/ExcelAnalysis";
 
 export default defineComponent({
   name: "App",

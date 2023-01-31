@@ -3,20 +3,19 @@
     <div v-if="loading" class="loading">
       <img src="../assets/loading.svg" />
     </div>
-    <div class="flex-container">
-      <div class="excel-index">{{ props.index }}</div>
-      <div>
-        <div class="flex-container">
-          <div>文件名称:</div>
-          <div>{{ info.name }}</div>
-        </div>
-        <div class="flex-container tag-info-container">
-          <div>内部表名称:</div>
-          <div class="flex-container tag-list">
-            <span class="excel-sheet-tag" v-for="(sheet, index) in info.sheets" :key="index">{{
-              sheet.name
-            }}</span>
-          </div>
+    <div>
+      <div class="file-title">{{ info.name }}</div>
+      <div class="flex-container tag-info-container">
+        <div>内部表名称:</div>
+        <div class="flex-container tag-list">
+          <span
+            class="excel-sheet-tag"
+            v-for="(sheet, index) in info.sheets"
+            :key="index"
+            :class="{ select: sheet.name === props.data.sheetName.name }"
+            @click="handleSelectName(sheet.name)"
+            >{{ sheet.name }}</span
+          >
         </div>
       </div>
     </div>
@@ -40,6 +39,10 @@ const info = ref<IExcelInfo>({
 const loading = ref(true);
 
 const props = defineProps<IProps>();
+
+const handleSelectName = (name: string) => {
+  props.data.updateSheetName(name);
+};
 
 onBeforeMount(() => {
   props.data.getExcelInfo().then((res) => {

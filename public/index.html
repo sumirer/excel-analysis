@@ -1,17 +1,91 @@
 <!DOCTYPE html>
 <html lang="">
-  <head>
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width,initial-scale=1.0">
-    <link rel="icon" href="<%= BASE_URL %>favicon.ico">
-    <title><%= htmlWebpackPlugin.options.title %></title>
-  </head>
-  <body>
-    <noscript>
-      <strong>We're sorry but <%= htmlWebpackPlugin.options.title %> doesn't work properly without JavaScript enabled. Please enable it to continue.</strong>
-    </noscript>
-    <div id="app"></div>
-    <!-- built files will be auto injected -->
-  </body>
+
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width,initial-scale=1.0">
+  <link rel="icon" href="<%= BASE_URL %>favicon.ico">
+  <title>
+    <%= htmlWebpackPlugin.options.title %>
+  </title>
+  <style>
+    #loading-mask {
+      position: fixed;
+      width: 100vw;
+      height: 100vh;
+      z-index: 9999;
+      top: 0;
+      background: #fff;
+      visibility: visible;
+      opacity: 1;
+      transition: visibility .2s ease-in-out,opacity .2s ease-in-out;
+    }
+
+    #loading-mask.hidden {
+      visibility: hidden;
+      opacity: 0;
+    }
+
+    #loading-mask>svg {
+      position: fixed;
+      top: calc(50% - 40px);
+      left: calc(50% - 40px);
+      width: 80px;
+      height: 80px;
+    }
+
+    html body {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      width: 100%;
+    }
+  </style>
+</head>
+
+<body>
+  <noscript>
+    <strong>We're sorry but <%= htmlWebpackPlugin.options.title %> doesn't work properly without JavaScript enabled.
+        Please enable it to continue.</strong>
+  </noscript>
+  <div id="loading-mask">
+    <svg xmlns="http://www.w3.org/2000/svg" width="135" height="140" viewBox="0 0 135 140" fill="#ff9f1c">
+      <rect y="10" width="15" height="120" rx="6">
+        <animate attributeName="height" begin="0.5s" dur="1s" values="120;110;100;90;80;70;60;50;40;140;120"
+          calcMode="linear" repeatCount="indefinite" />
+        <animate attributeName="y" begin="0.5s" dur="1s" values="10;15;20;25;30;35;40;45;50;0;10" calcMode="linear"
+          repeatCount="indefinite" />
+      </rect>
+      <rect x="30" y="10" width="15" height="120" rx="6">
+        <animate attributeName="height" begin="0.25s" dur="1s" values="120;110;100;90;80;70;60;50;40;140;120"
+          calcMode="linear" repeatCount="indefinite" />
+        <animate attributeName="y" begin="0.25s" dur="1s" values="10;15;20;25;30;35;40;45;50;0;10" calcMode="linear"
+          repeatCount="indefinite" />
+      </rect>
+      <rect x="60" width="15" height="140" rx="6">
+        <animate attributeName="height" begin="0s" dur="1s" values="120;110;100;90;80;70;60;50;40;140;120"
+          calcMode="linear" repeatCount="indefinite" />
+        <animate attributeName="y" begin="0s" dur="1s" values="10;15;20;25;30;35;40;45;50;0;10" calcMode="linear"
+          repeatCount="indefinite" />
+      </rect>
+      <rect x="90" y="10" width="15" height="120" rx="6">
+        <animate attributeName="height" begin="0.25s" dur="1s" values="120;110;100;90;80;70;60;50;40;140;120"
+          calcMode="linear" repeatCount="indefinite" />
+        <animate attributeName="y" begin="0.25s" dur="1s" values="10;15;20;25;30;35;40;45;50;0;10" calcMode="linear"
+          repeatCount="indefinite" />
+      </rect>
+      <rect x="120" y="10" width="15" height="120" rx="6">
+        <animate attributeName="height" begin="0.5s" dur="1s" values="120;110;100;90;80;70;60;50;40;140;120"
+          calcMode="linear" repeatCount="indefinite" />
+        <animate attributeName="y" begin="0.5s" dur="1s" values="10;15;20;25;30;35;40;45;50;0;10" calcMode="linear"
+          repeatCount="indefinite" />
+      </rect>
+    </svg>
+  </div>
+  <div id="app"></div>
+
+  <!-- built files will be auto injected -->
+</body>
+
 </html>

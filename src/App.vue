@@ -1,18 +1,35 @@
 <template>
-  <Model :visible="showModel" @hide="showModel = false">
-    <div>Excel列表</div>
-    <div>
-      <ExcelCard
-        v-for="(item, index) in excel.excelList"
-        :data="item"
-        :key="index"
-        :index="index"
-      ></ExcelCard>
+  <FileManageModel
+    :visible="showModel"
+    @hide="showModel = false"
+    @file-change="handleFilePick"
+    :excel-list="excel.excelList"
+  >
+  </FileManageModel>
+  <DataPreviewDialog
+    v-if="showPreview"
+    :visible="showPreviewVisible"
+    :data="excel.getExcelData"
+    @hide="showPreviewVisible = false"
+    @hided="showPreview = false"
+  ></DataPreviewDialog>
+  <FilterConfigModal
+    :visible="showFilterConfigVisible"
+    @hide="showFilterConfigVisible = !showFilterConfigVisible"
+  ></FilterConfigModal>
+  <div class="tools-container">
+    <div class="tool-item" @click="showModel = !showModel">
+      <img class="tool-icon" src="./assets/excel.svg" />
+      <span>已导入Excel</span>
     </div>
-    <FileUpload @file-change="handleFilePick" />
-  </Model>
-  <div class="body-header">
-    <div class="model-open" @click="showModel = !showModel">已导入Excel</div>
+    <div class="tool-item" @click="handleOpenPreview">
+      <img class="tool-icon" src="./assets/preview.svg" />
+      <span>查看数据</span>
+    </div>
+    <div class="tool-item" @click="showFilterConfigVisible = !showFilterConfigVisible">
+      <img class="tool-icon" src="./assets/filter.svg" />
+      <span>配置漏斗</span>
+    </div>
   </div>
   <div class="body-container">
     <div></div>
@@ -20,24 +37,27 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from "vue";
-import ExcelCard from "./views/ExcelCard.vue";
-import FileUpload from "./views/FileUpload.vue";
-import Model from "./views/Model.vue";
+import { defineComponent, nextTick } from "vue";
+import FileManageModel from "./views/FileManageModal.vue";
 import "./views/index.scss";
 import { ExcelAnalysis } from "./excel/ExcelAnalysis";
+import DataPreviewDialog from "./views/DataPreviewDialog.vue";
+import FilterConfigModal from "./views/FilterConfigModal.vue";
 
 export default defineComponent({
   name: "App",
   components: {
-    FileUpload,
-    ExcelCard,
-    Model,
+    FileManageModel,
+    DataPreviewDialog,
+    FilterConfigModal,
   },
   data() {
     return {
       excel: new ExcelAnalysis(),
       showModel: false,
+      showPreview: false,
+      showPreviewVisible: false,
+      showFilterConfigVisible: false,
     };
   },
   methods: {
@@ -49,6 +69,20 @@ export default defineComponent({
         }
       }
     },
+    handleOpenPreview() {
+      this.showPreview = !this.showPreview;
+      nextTick(() => {
+        this.showPreviewVisible = !this.showPreviewVisible;
+      });
+    },
+  },
+  mounted() {
+    setTimeout(() => {
+      document.getElementById("loading-mask")?.classList.add("hidden");
+      setTimeout(() => {
+        this.showModel = true;
+      }, 200);
+    }, 1000);
   },
 });
 </script>

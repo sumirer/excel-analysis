@@ -15,12 +15,13 @@
           {{ excel.dataInfo.fileName }}-({{ excel.dataInfo.sheetName }})
         </div>
       </div>
-      <DataTable
-        v-if="props.data[showIndex]"
-        :key="showIndex"
-        :columns="props.data[showIndex].col"
-        :data="props.data[showIndex].data"
-      ></DataTable>
+      <div class="tab-wrapper">
+        <div class="tab-body-container" :style="{ transform: `translateX(-${showIndex * 100}%)` }">
+          <div v-for="(excel, index) in props.data" :key="index" class="tab-body-item">
+            <DataTable :columns="excel.col" :data="excel.data"></DataTable>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 </template>

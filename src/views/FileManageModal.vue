@@ -15,6 +15,7 @@
           :data="item"
           :key="index"
           :index="index"
+          @delete="handleDelete(item)"
         ></ExcelCard>
       </div>
       <FileUpload @file-change="handleFilePick" />
@@ -40,7 +41,7 @@ const props = defineProps<IProps>();
 
 const showUploadMask = ref(false);
 
-const emits = defineEmits(["hide", "file-change"]);
+const emits = defineEmits(["hide", "file-change", "delete"]);
 
 const handleHide = () => {
   emits("hide");
@@ -68,5 +69,9 @@ const handleFileDrop = (event: DragEvent) => {
   if (files) {
     handleFilePick(files);
   }
+};
+
+const handleDelete = (excel: ExcelInfo) => {
+  emits("delete", excel);
 };
 </script>

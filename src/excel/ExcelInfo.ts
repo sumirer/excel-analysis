@@ -58,7 +58,7 @@ export class ExcelInfo {
       0) as number;
     xLength = xLength > 0 ? xLength : 0;
     const yLength = this.pickExcelSheetData.value.length;
-    this.setupDataRange([1, 1], [xLength - 1, yLength - 1]);
+    this.setupDataRange([1, 1], [xLength, yLength]);
   }
 
   public fileReadCallback(): void {

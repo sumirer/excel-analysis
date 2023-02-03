@@ -30,6 +30,8 @@ export enum EFilterType {
 export type PartOmitField = "filterType" | "name";
 
 export abstract class Filter<T, O, C extends IBaseFIlterOption> {
+  public abstract name: string;
+
   public abstract filterOptions: C;
 
   /**

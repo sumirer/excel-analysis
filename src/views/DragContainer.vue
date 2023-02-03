@@ -1,6 +1,16 @@
 <template>
   <div class="drag-viewport">
-    <div @click="addFilter">添加</div>
+    <div class="filter-title">当前可用漏斗</div>
+    <div class="filter-list-container">
+      <div
+        v-for="(filter, index) in defaultFilterList"
+        :key="index"
+        @click="filter.addCallback"
+        class="filter-item"
+      >
+        {{ filter.name }}
+      </div>
+    </div>
     <svg
       @mouseout.left="handleMouseStop"
       @mousemove.left.stop.prevent="handleMouseMove($event)"
@@ -14,17 +24,17 @@
         v-for="path in filters"
         :key="path.id"
         @mousedown.left.stop.prevent="handleMouseDown($event, path)"
-        @click="handleFocus(path)"
+        @mouseup.left.stop.prevent="handleMouseUp(path)"
       >
         <rect
           :x="path.x"
           :y="path.y"
           width="100"
           height="100"
-          fill="#cbf3f0"
+          fill="#ffbf6980"
           rx="10"
           ry="10"
-          stroke="#2ec4b6"
+          stroke="#ff9f1c"
         ></rect>
         <text :x="path.x + 10" :y="path.y + 17" style="font-size: 14px">{{ path.name }}</text>
       </g>
@@ -32,7 +42,7 @@
         v-for="(line, index) in linkLine"
         :key="index"
         :d="`M ${line[0].x},${line[0].y} C ${line[0].cx},${line[0].cy} ${line[1].cx},${line[1].cy} ${line[1].x},${line[1].y}`"
-        stroke="#2ec4b6"
+        stroke="#ff9f1c"
         fill="none"
       ></path>
     </svg>
@@ -44,6 +54,65 @@ import { IFilterSource } from "@/excel/filter/Filter";
 import { GroupByFilter } from "@/excel/filter/GroupByFilter";
 import { ISvgCardPath, ISvgPath } from "@/types";
 import { computed, ref, defineEmits, onMounted } from "vue";
+
+const defaultFilterList = [
+  {
+    name: "分组",
+    addCallback: () => addFilter(new GroupByFilter()),
+  },
+  {
+    name: "分组",
+    addCallback: () => addFilter(new GroupByFilter()),
+  },
+  {
+    name: "分组",
+    addCallback: () => addFilter(new GroupByFilter()),
+  },
+  {
+    name: "分组",
+    addCallback: () => addFilter(new GroupByFilter()),
+  },
+  {
+    name: "分组",
+    addCallback: () => addFilter(new GroupByFilter()),
+  },
+  {
+    name: "分组",
+    addCallback: () => addFilter(new GroupByFilter()),
+  },
+  {
+    name: "分组",
+    addCallback: () => addFilter(new GroupByFilter()),
+  },
+  {
+    name: "分组",
+    addCallback: () => addFilter(new GroupByFilter()),
+  },
+  {
+    name: "分组",
+    addCallback: () => addFilter(new GroupByFilter()),
+  },
+  {
+    name: "分组",
+    addCallback: () => addFilter(new GroupByFilter()),
+  },
+  {
+    name: "分组",
+    addCallback: () => addFilter(new GroupByFilter()),
+  },
+  {
+    name: "分组",
+    addCallback: () => addFilter(new GroupByFilter()),
+  },
+  {
+    name: "分组",
+    addCallback: () => addFilter(new GroupByFilter()),
+  },
+  {
+    name: "分组",
+    addCallback: () => addFilter(new GroupByFilter()),
+  },
+];
 
 const createDefaultFilterData = () => {
   const pathData: Array<ISvgCardPath<IFilterSource>> = [
@@ -65,13 +134,13 @@ const createDefaultFilterData = () => {
 
 const filters = ref<Array<ISvgCardPath<IFilterSource>>>(createDefaultFilterData());
 
-const addFilter = () => {
+const addFilter = (filter: IFilterSource) => {
   const last = filters.value[filters.value.length - 1];
   filters.value[filters.value.length - 1] = {
     x: 200,
     y: 100,
-    name: "Group By Filter",
-    data: new GroupByFilter(),
+    name: filter.name,
+    data: filter,
     id: Date.now() + Math.random() + "_" + (filters.value.length + 1),
   };
   filters.value.push(last);
@@ -122,6 +191,7 @@ const nowFocusId = ref("");
 const lastPoint = { x: 0, y: 0 };
 const recordPoint = { x: 0, y: 0 };
 let recordObject: ISvgCardPath<IFilterSource>;
+let clickDownTime = 0;
 
 onMounted(() => {
   if (svgRef.value) {
@@ -135,6 +205,7 @@ const handleMouseDown = (event: MouseEvent, path: ISvgCardPath<IFilterSource>) =
   Object.assign(lastPoint, { x: event.clientX, y: event.clientY });
   Object.assign(recordPoint, { x: path.x, y: path.y });
   recordObject = path;
+  clickDownTime = Date.now();
 };
 
 let lastViewPortRecord: { x: number; y: number } | undefined;
@@ -178,11 +249,9 @@ const handleMouseWheel = (event: WheelEvent) => {
   viewBox.value[1] = y - pointY * zoom;
   viewBox.value[2] = (svgWidth - pointX) * zoom + eX;
   viewBox.value[3] = (svgHeight - pointY) * zoom + eY;
-  console.log(deltaY, event, rect);
 };
 
 const handleViewportDown = (event: MouseEvent) => {
-  console.log("viewport", event);
   lastViewPortRecord = {
     x: event.clientX,
     y: event.clientY,
@@ -190,6 +259,14 @@ const handleViewportDown = (event: MouseEvent) => {
   const [x, y, eX, eY] = viewBox.value;
   const rect = (event.target as SVGAElement).getClientRects()[0];
   lastViewportSize = { x, y, eX, eY, width: rect.width, height: rect.height };
+};
+
+const handleMouseUp = (path: ISvgCardPath<IFilterSource>) => {
+  if (nowFocusId.value && clickDownTime !== 0 && Date.now() - clickDownTime < 200) {
+    handleFocus(path);
+  }
+  clickDownTime = 0;
+  handleMouseStop();
 };
 
 const handleMouseStop = () => {

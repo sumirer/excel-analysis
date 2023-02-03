@@ -5,6 +5,9 @@
       <div class="title">漏斗配置</div>
       <DragContainer @focus="handleEditAttributes"></DragContainer>
       <div class="modal-container inner-modal" :class="{ 'inner-modal-visible': innerVisible }">
+        <div @click="innerVisible = false">
+            收起
+        </div>
         <div>
           <div v-for="(value, key) in editFilterData?.data?.editAttributes" :key="key">
             <div>{{ key }}</div>

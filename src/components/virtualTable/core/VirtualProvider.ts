@@ -350,7 +350,6 @@ export class VirtualProvider implements LifeCycle {
   }
 
   dispose(): void {
-    console.log("call dispose");
     this.sizeObserver.disconnect();
   }
 }

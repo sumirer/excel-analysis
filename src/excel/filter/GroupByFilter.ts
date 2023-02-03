@@ -1,3 +1,4 @@
+import { IBaseData } from "@/types";
 import { reactive } from "vue";
 import {
   Filter,
@@ -18,11 +19,13 @@ export interface IGroupByFilterOptions extends IBaseFIlterOption {
   groupType: IGroupByType;
 }
 
-export class GroupByFilter<O> extends Filter<
+export class GroupByFilter extends Filter<
   Array<Array<string | number>>,
-  O,
+  IBaseData,
   IGroupByFilterOptions
 > {
+  public name = "分组";
+
   public editAttributes: PartEditOmit<IGroupByFilterOptions, PartOmitField> = {
     groupType: {
       desc: "选择数据模式",
@@ -38,7 +41,7 @@ export class GroupByFilter<O> extends Filter<
     filterType: EFilterType.GROUP_BY,
   });
 
-  public receive(data: Array<Array<string | number>>): any {
+  public receive(data: IBaseData): IBaseData {
     return data;
   }
 }

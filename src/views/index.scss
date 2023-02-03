@@ -43,9 +43,19 @@ $distance: 18px;
     margin: 0 5px 10px 5px;
     border-radius: $border-radius;
     overflow: hidden;
+    position: relative;
 
     &:hover {
         background: $color-primary-shadow;
+    }
+
+    .card-close {
+        position: absolute;
+        right: 5px;
+        top: 5px;
+        width: 16px;
+        height: 16px;
+        cursor: pointer;
     }
 
     .file-title {
@@ -317,6 +327,25 @@ table {
     }
 }
 
+.tab-wrapper {
+    width: 100%;
+    overflow: hidden;
+    height: 100%;
+}
+
+.tab-body-container {
+    display: flex;
+    transform: translateX(0);
+    transition: transform .2s ease-in-out;
+    height: 100%;
+
+    .tab-body-item {
+        flex: none;
+        width: 100%;
+        height: 100%;
+    }
+}
+
 .table-wrapper {
     width: 100%;
     height: 100%;
@@ -394,4 +423,59 @@ svg {
         height: 26px;
         margin-bottom: 5px;
     }
+}
+
+.filter-title {
+    font-size: 14px;
+    padding: 10px 12px 5px;
+}
+
+.filter-list-container {
+    width: 100%;
+    overflow-y: hidden;
+    overflow-x: auto;
+    display: flex;
+    padding: 10px 12px;
+    border-bottom: 1px solid $color-primary;
+    box-sizing: border-box;
+
+    .filter-item {
+        width: 50px;
+        height: 50px;
+        flex: none;
+        background: $color-deep-primary-bg;
+        border: 1px solid $color-deep-primary;
+        border-radius: $border-radius;
+        cursor: pointer;
+        font-size: 12px;
+        font-weight: bold;
+        padding: 5px;
+        box-sizing: border-box;
+        margin-right: 10px;
+    }
+}
+
+*::-webkit-scrollbar {
+    width: 5px;
+    height: 5px;
+}
+
+*::-webkit-scrollbar-track {
+    background: #e5e5e5;
+    border-radius: 5px;
+}
+
+*::-webkit-scrollbar-thumb {
+    background: #999;
+    border-radius: 5px;
+}
+
+*::-webkit-scrollbar-thumb:hover {
+    background: #666;
+    border-radius: 5px;
+}
+
+*::-webkit-scrollbar-thumb:active {
+    background: #666;
+    border-radius: 5px;
 }

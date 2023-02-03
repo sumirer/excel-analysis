@@ -4,6 +4,7 @@
     @hide="showModel = false"
     @file-change="handleFilePick"
     :excel-list="excel.excelList"
+    @delete="handleDeleteExcel"
   >
   </FileManageModel>
   <DataPreviewDialog
@@ -43,6 +44,7 @@ import "./views/index.scss";
 import { ExcelAnalysis } from "./excel/ExcelAnalysis";
 import DataPreviewDialog from "./views/DataPreviewDialog.vue";
 import FilterConfigModal from "./views/FilterConfigModal.vue";
+import { ExcelInfo } from "./excel/ExcelInfo";
 
 export default defineComponent({
   name: "App",
@@ -74,6 +76,9 @@ export default defineComponent({
       nextTick(() => {
         this.showPreviewVisible = !this.showPreviewVisible;
       });
+    },
+    handleDeleteExcel(excel: ExcelInfo) {
+      this.excel.removeExcel(excel);
     },
   },
   mounted() {

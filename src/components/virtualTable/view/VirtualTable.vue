@@ -213,7 +213,7 @@ const VirtualTable = defineComponent({
                 column={dataManager.leftFixedColumns}
                 renderIndex={[0, dataManager.leftFixedColumns.length - 1]}
                 rowData={dataValue[index]}
-                sizeObserver={false}
+                sizeObserver={true}
                 onHover={handleHover}
                 onUnHover={handleUnHover}
               >
@@ -229,7 +229,7 @@ const VirtualTable = defineComponent({
                 column={dataManager.rightFixedColumns}
                 renderIndex={[0, dataManager.rightFixedColumns.length - 1]}
                 rowData={dataValue[index]}
-                sizeObserver={false}
+                sizeObserver={true}
                 onHover={handleHover}
                 onUnHover={handleUnHover}
               >

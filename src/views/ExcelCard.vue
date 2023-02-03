@@ -4,6 +4,7 @@
       <img src="../assets/loading.svg" />
     </div>
     <div>
+      <img src="../assets/close.svg" class="card-close" @click="handleDelete" />
       <div class="file-title">{{ info.name }}</div>
       <div class="flex-container tag-info-container">
         <div>内部表名称:</div>
@@ -24,7 +25,7 @@
 
 <script lang="ts" setup>
 import { ExcelInfo, IExcelInfo } from "@/excel/ExcelInfo";
-import { defineProps, ref, onBeforeMount } from "vue";
+import { defineProps, ref, onBeforeMount, defineEmits } from "vue";
 
 interface IProps {
   data: ExcelInfo;
@@ -36,12 +37,18 @@ const info = ref<IExcelInfo>({
   sheets: [],
 });
 
+const emits = defineEmits(["delete"]);
+
 const loading = ref(true);
 
 const props = defineProps<IProps>();
 
 const handleSelectName = (name: string) => {
   props.data.updateSheetName(name);
+};
+
+const handleDelete = () => {
+  emits("delete");
 };
 
 onBeforeMount(() => {

@@ -121,7 +121,7 @@ export class ExcelInfo {
     const result = this.getData(startX, endX, startY, endY);
     return {
       col: result[0],
-      data: result.slice(1),
+      data: result,
       dataInfo: {
         fileName: this.fileName,
         sheetName: this.parser.workbook.getWorksheet(this.sheetName.name).name,

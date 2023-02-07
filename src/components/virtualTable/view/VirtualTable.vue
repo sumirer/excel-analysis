@@ -8,6 +8,7 @@ import {
   useSlots,
   nextTick,
   VNode,
+  PropType,
 } from "vue";
 import { EVENT_PROVIDE_KEY, SIZE_PROVIDED_KEY } from "../core/Inject";
 import ScrollEventHub from "../core/ScrollEventHub";
@@ -20,6 +21,7 @@ import { EDataChangeEnum, IRenderData, IScrollPosition } from "@/types/virtual";
 import TableColumnFixedWrapper from "./TableColumnFixedWrapper.vue";
 import { IDictionaries } from "@/types";
 import VirtualDataManager from "../core/VirtualDataManager";
+import { ITableColumn } from "@/types/table";
 const VirtualTable = defineComponent({
   props: {
     dataManager: {
@@ -28,6 +30,28 @@ const VirtualTable = defineComponent({
     presetHeight: {
       type: Number,
       default: () => 60,
+    },
+    showHeader: {
+      type: Boolean,
+      default: () => true,
+    },
+    selectMode: {
+      type: Boolean,
+      default: () => false,
+    },
+    onSelectStart: {
+      type: Function as PropType<(event: MouseEvent, target: HTMLDivElement) => void>,
+    },
+    onSelectEnd: {
+      type: Function as PropType<
+        (event: MouseEvent, horizontal: Array<number>, vertical: Array<number>) => void
+      >,
+    },
+    onSelectMove: {
+      type: Function as PropType<(event: MouseEvent, target: HTMLDivElement) => void>,
+    },
+    onHeaderClick: {
+      type: Function as PropType<(col: ITableColumn) => void>,
     },
   },
   setup(props) {
@@ -91,6 +115,11 @@ const VirtualTable = defineComponent({
           if (columnRef.value) virtualProvider.initScrollBodySize(columnRef.value);
         });
       }
+      if (columnRef.value && props.selectMode) {
+        columnRef.value.addEventListener("mouseup", onSelectEnd);
+        columnRef.value.addEventListener("mousemove", onSelectMove);
+        columnRef.value.addEventListener("mousedown", onSelectStart);
+      }
       handleAreaScrollChange({ x: 0, y: 0 });
       window.addEventListener("resize", handleResize);
     });
@@ -145,10 +174,32 @@ const VirtualTable = defineComponent({
 
     dataManager.registerColumnChangeCallback(handleColumnChange);
 
+    const onSelectEnd = (event: MouseEvent) => {
+      if (columnRef.value)
+        props.onSelectEnd?.(
+          event,
+          virtualProvider.cellSize.horizontal,
+          virtualProvider.cellSize.vertical
+        );
+    };
+
+    const onSelectMove = (event: MouseEvent) => {
+      if (columnRef.value) props.onSelectMove?.(event, columnRef.value);
+    };
+
+    const onSelectStart = (event: MouseEvent) => {
+      if (columnRef.value) props.onSelectStart?.(event, columnRef.value);
+    };
+
     onBeforeUnmount(() => {
       if (columnRef.value) {
         columnRef.value.removeEventListener("scroll", handleScrollChange);
         eventHub.value.unregister(handleAreaScrollChange);
+      }
+      if (columnRef.value && props.selectMode) {
+        columnRef.value.removeEventListener("mouseup", onSelectEnd);
+        columnRef.value.removeEventListener("mousemove", onSelectMove);
+        columnRef.value.removeEventListener("mousedown", onSelectStart);
       }
       virtualProvider.dispose();
       window.removeEventListener("resize", handleResize);
@@ -260,11 +311,15 @@ const VirtualTable = defineComponent({
 
       return (
         <div ref={viewportRef} class="sapphire-virtual" style={{ height: "500px" }}>
-          <TableHeader
-            columns={dataManager.headerRenderOtherColumns}
-            leftColumns={dataManager.headerRenderLeftFixedColumns}
-            rightColumns={dataManager.headerRenderRightFixedColumns}
-          ></TableHeader>
+          {props.showHeader && (
+            <TableHeader
+              columns={dataManager.headerRenderOtherColumns}
+              leftColumns={dataManager.headerRenderLeftFixedColumns}
+              rightColumns={dataManager.headerRenderRightFixedColumns}
+              onHeaderClick={props.onHeaderClick}
+            ></TableHeader>
+          )}
+
           <div ref={columnRef} class="sapphire-virtual__table-scroll-body">
             <div
               class="sapphire-virtual__table-scroll-body-wrapper"
@@ -272,6 +327,7 @@ const VirtualTable = defineComponent({
                 width: `${layout.areaWidth + layout.leftFixedWidth + layout.rightFixedWidth}px`,
               }}
             >
+              {slots["overlay"]?.()}
               {hasLeftFixed ? (
                 <TableColumnFixedWrapper
                   style={{

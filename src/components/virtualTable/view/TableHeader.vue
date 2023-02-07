@@ -9,6 +9,7 @@ import {
   CSSProperties,
   nextTick,
   onBeforeUnmount,
+  PropType,
 } from "vue";
 import { ITableColumn } from "@/types/table";
 import { EVENT_PROVIDE_KEY, SIZE_PROVIDED_KEY } from "../core/Inject";
@@ -26,6 +27,9 @@ const TableHeader = defineComponent({
     },
     rightColumns: {
       type: Array,
+    },
+    onHeaderClick: {
+      type: Function as PropType<(col: ITableColumn) => void>,
     },
   },
   setup(props) {
@@ -68,6 +72,7 @@ const TableHeader = defineComponent({
                 left: offset + "px",
               }}
               class="header-title"
+              onClick={() => props.onHeaderClick?.(col)}
             >
               <div class="sapphire-virtual__table-container">{col.title}</div>
             </div>

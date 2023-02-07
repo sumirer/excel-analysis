@@ -18,6 +18,13 @@
     :visible="showFilterConfigVisible"
     @hide="showFilterConfigVisible = !showFilterConfigVisible"
   ></FilterConfigModal>
+  <DataSelectDialog
+    v-if="showSelect"
+    :visible="showDataSelectVisible"
+    @hide="showDataSelectVisible = false"
+    @hided="showSelect = false"
+    :data="excelData"
+  ></DataSelectDialog>
   <div class="tools-container">
     <div class="tool-item" @click="showModel = !showModel">
       <img class="tool-icon" src="./assets/excel.svg" />
@@ -30,6 +37,10 @@
     <div class="tool-item" @click="showFilterConfigVisible = !showFilterConfigVisible">
       <img class="tool-icon" src="./assets/filter.svg" />
       <span>配置漏斗</span>
+    </div>
+    <div class="tool-item" @click="handleOpenSelect">
+      <img class="tool-icon" src="./assets/filter.svg" />
+      <span>选择数据</span>
     </div>
   </div>
   <div class="body-container">
@@ -45,6 +56,7 @@ import { ExcelAnalysis } from "./excel/ExcelAnalysis";
 import DataPreviewDialog from "./views/DataPreviewDialog.vue";
 import FilterConfigModal from "./views/FilterConfigModal.vue";
 import { ExcelInfo } from "./excel/ExcelInfo";
+import DataSelectDialog from "./views/DataSelectDialog.vue";
 
 export default defineComponent({
   name: "App",
@@ -52,14 +64,25 @@ export default defineComponent({
     FileManageModel,
     DataPreviewDialog,
     FilterConfigModal,
+    DataSelectDialog,
   },
   data() {
     return {
       excel: new ExcelAnalysis(),
+      excelData: {
+        data: [],
+        dataInfo: {
+          fileName: "",
+          sheetName: "",
+        },
+        col: [],
+      },
       showModel: false,
       showPreview: false,
       showPreviewVisible: false,
       showFilterConfigVisible: false,
+      showDataSelectVisible: false,
+      showSelect: false,
     };
   },
   methods: {
@@ -75,6 +98,13 @@ export default defineComponent({
       this.showPreview = !this.showPreview;
       nextTick(() => {
         this.showPreviewVisible = !this.showPreviewVisible;
+      });
+    },
+    handleOpenSelect() {
+      this.showSelect = true;
+      Object.assign(this.excelData, this.excel.getExcelData[0]);
+      nextTick(() => {
+        this.showDataSelectVisible = !this.showDataSelectVisible;
       });
     },
     handleDeleteExcel(excel: ExcelInfo) {

@@ -18,7 +18,7 @@
       <div class="tab-wrapper">
         <div class="tab-body-container" :style="{ transform: `translateX(-${showIndex * 100}%)` }">
           <div v-for="(excel, index) in props.data" :key="index" class="tab-body-item">
-            <DataTable :columns="excel.col" :data="excel.data"></DataTable>
+            <DataTable :columns="excel.col" :data="excel.data" :show-header="false"></DataTable>
           </div>
         </div>
       </div>

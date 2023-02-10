@@ -380,7 +380,7 @@ table {
     height: 100%;
 }
 
-svg {
+.svg-box {
     width: 100%;
     height: 100%;
 
@@ -394,7 +394,7 @@ svg {
     flex-direction: column;
 }
 
-.flex-row{
+.flex-row {
     display: flex;
     overflow: hidden;
     height: 100%;
@@ -479,7 +479,7 @@ svg {
     z-index: 2;
 }
 
-.data-select-list{
+.data-select-list {
     padding: 5px 10px;
     overflow-y: auto;
     height: 100%;
@@ -487,17 +487,110 @@ svg {
     flex: none;
 }
 
-.data-select-container{
+.data-select-container {
     border-radius: $border-radius;
     border: 1px solid $color-primary-shadow;
     background-color: #fff;
     padding: 5px;
     cursor: pointer;
     margin-bottom: 10px;
-    width: 160px;
+    width: 200px;
+    position: relative;
+    transition: background .2s ease-in-out;
 
-    &.checked{
+    &.checked {
         border-color: $color-primary;
+        background: $color-primary-bg;
+    }
+
+    .card-input {
+        width: 100px;
+        outline: none;
+        border: 1px solid $color-primary;
+        border-radius: 3px;
+    }
+
+    .card-title{
+        font-size: 14px;
+        padding: 5px 0;
+    }
+
+    .path-edit-card {
+        position: relative;
+        border-bottom: 1px solid $color-primary;
+        margin-bottom: 10px;
+        font-size: 14px;
+        line-height: 22px;
+        padding: 8px 0;
+
+        &:last-child {
+            border-bottom: none;
+            margin-bottom: unset;
+        }
+
+        &:nth-child(2) {
+            border-top: 1px solid $color-primary;
+        }
+
+        .card-item {
+            display: flex;
+            align-items: center;
+        }
+
+
+    }
+
+    .edit-remove {
+        position: absolute;
+        right: 5px;
+        top: 5px;
+        width: 18px;
+        height: 18px;
+    }
+}
+
+.filter-container {
+    border-top: 1px solid $color-primary;
+}
+
+.filter-edit-card {
+    border-bottom: 1px dashed $color-primary;
+    padding: 10px 0;
+
+}
+
+.filter-op-container {
+    display: flex;
+    flex-wrap: wrap;
+
+    .file-op-item {
+        width: 86px;
+        height: 40px;
+        border: 1px dashed $color-deep-primary;
+        background: $color-deep-primary-bg;
+        color: #333;
+        font-weight: bold;
+        line-height: 40px;
+        margin: 5px;
+        border-radius: $border-radius;
+        text-align: center;
+        cursor: pointer;
+        transition: background .2s ease-in-out;
+
+        &:hover {
+            background: $color-deep-primary-shadow;
+        }
+    }
+}
+
+.filter-edit-item {
+    display: flex;
+    font-size: 14px;
+    align-items: center;
+    padding: 0 10px;
+
+    .filter-item-title {
+        margin-right: 5px;
     }
 }
 

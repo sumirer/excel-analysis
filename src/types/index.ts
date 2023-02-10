@@ -1,3 +1,5 @@
+import { ExcelInfo } from "@/excel/ExcelInfo";
+
 export interface AnalysisData {
   dataInfo: {
     fileName: string;
@@ -5,6 +7,7 @@ export interface AnalysisData {
   };
   col: Array<string | number>;
   data: Array<Array<string | number>>;
+  excelInfo: ExcelInfo;
 }
 
 export interface IDictionaries<T = unknown> {
@@ -27,3 +30,11 @@ export interface ISvgCardPath<T> {
 }
 
 export type IBaseData = Array<Array<string | number>>;
+
+export type IFilterSelectData = Array<IFilterSelectDataInfo>;
+
+
+export type IFilterSelectDataInfo = {
+  name: string;
+  data: Array<number>;
+}

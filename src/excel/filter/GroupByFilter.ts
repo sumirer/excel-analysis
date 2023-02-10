@@ -7,6 +7,7 @@ import {
   EFilterType,
   PartEditOmit,
   PartOmitField,
+  EditPartType,
 } from "./Filter";
 
 export enum IGroupByType {
@@ -29,6 +30,7 @@ export class GroupByFilter extends Filter<
   public editAttributes: PartEditOmit<IGroupByFilterOptions, PartOmitField> = {
     groupType: {
       desc: "选择数据模式",
+      dataType: EditPartType.INPUT,
       value: "",
     },
   };
@@ -40,6 +42,10 @@ export class GroupByFilter extends Filter<
     groupByValue: "",
     filterType: EFilterType.GROUP_BY,
   });
+
+  public handleAttributeChange(value: IGroupByFilterOptions): void {
+    console.log(value);
+  }
 
   public receive(data: IBaseData): IBaseData {
     return data;

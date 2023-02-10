@@ -22,6 +22,7 @@ import TableColumnFixedWrapper from "./TableColumnFixedWrapper.vue";
 import { IDictionaries } from "@/types";
 import VirtualDataManager from "../core/VirtualDataManager";
 import { ITableColumn } from "@/types/table";
+import { PathData } from "@/types/page";
 const VirtualTable = defineComponent({
   props: {
     dataManager: {
@@ -44,14 +45,24 @@ const VirtualTable = defineComponent({
     },
     onSelectEnd: {
       type: Function as PropType<
-        (event: MouseEvent, horizontal: Array<number>, vertical: Array<number>) => void
+        (
+          event: MouseEvent,
+          horizontal: Array<number>,
+          vertical: Array<number>,
+          verticalSize: Array<number>
+        ) => void
       >,
     },
     onSelectMove: {
       type: Function as PropType<(event: MouseEvent, target: HTMLDivElement) => void>,
     },
     onHeaderClick: {
-      type: Function as PropType<(col: ITableColumn) => void>,
+      type: Function as PropType<
+        (col: ITableColumn, sizeList: number[], maxLength: number) => void
+      >,
+    },
+    renderPath: {
+      type: Object as PropType<Array<PathData>>,
     },
   },
   setup(props) {
@@ -179,7 +190,8 @@ const VirtualTable = defineComponent({
         props.onSelectEnd?.(
           event,
           virtualProvider.cellSize.horizontal,
-          virtualProvider.cellSize.vertical
+          virtualProvider.cellSize.vertical,
+          virtualProvider.sizeCache.vertical
         );
     };
 
@@ -243,6 +255,14 @@ const VirtualTable = defineComponent({
       const hasRightFixed = dataManager.rightFixedColumns.length > 0;
       const layout = virtualProvider.layout;
       const renderInfo = virtualProvider.renderInfo;
+      const renderPathObj =
+        props.renderPath?.reduce((pValue, nValue) => {
+          const index = nValue.rowIndex;
+          if (index !== undefined) {
+            pValue[index] = nValue;
+          }
+          return pValue;
+        }, {} as { [key: number]: PathData }) || {};
       const dataValue = dataManager.getData() as Array<IDictionaries>;
       if (renderDataDiff(renderInfo, lastRenderData)) {
         fixedLeftViews = renderViewsCache.fixedLeftViews;
@@ -259,7 +279,15 @@ const VirtualTable = defineComponent({
             fixedLeftViews.push(
               <VirtualRow
                 key={`left_${index}`}
-                style={{ position: "absolute", top: height + "px", left: 0 }}
+                style={{
+                  position: "absolute",
+                  top: height + "px",
+                  left: 0,
+                  border: renderPathObj[index]
+                    ? `1px solid ${renderPathObj[index].color}`
+                    : undefined,
+                  background: renderPathObj[index] ? renderPathObj[index].color + "40" : undefined,
+                }}
                 rowIndex={index}
                 column={dataManager.leftFixedColumns}
                 renderIndex={[0, dataManager.leftFixedColumns.length - 1]}
@@ -275,7 +303,15 @@ const VirtualTable = defineComponent({
             fixedRightViews.push(
               <VirtualRow
                 key={`right_${index}`}
-                style={{ position: "absolute", top: height + "px", left: 0 }}
+                style={{
+                  position: "absolute",
+                  top: height + "px",
+                  left: 0,
+                  border: renderPathObj[index]
+                    ? `1px solid ${renderPathObj[index].color}`
+                    : undefined,
+                  background: renderPathObj[index] ? renderPathObj[index].color + "40" : undefined,
+                }}
                 rowIndex={index}
                 column={dataManager.rightFixedColumns}
                 renderIndex={[0, dataManager.rightFixedColumns.length - 1]}
@@ -290,7 +326,15 @@ const VirtualTable = defineComponent({
           views.push(
             <VirtualRow
               key={`center_${index}`}
-              style={{ position: "absolute", top: height + "px", left: 0 }}
+              style={{
+                position: "absolute",
+                top: height + "px",
+                left: 0,
+                border: renderPathObj[index]
+                  ? `1px solid ${renderPathObj[index].color}`
+                  : undefined,
+                background: renderPathObj[index] ? renderPathObj[index].color + "40" : undefined,
+              }}
               rowIndex={index}
               column={dataManager.otherColumns}
               rowData={dataValue[index]}
@@ -316,7 +360,13 @@ const VirtualTable = defineComponent({
               columns={dataManager.headerRenderOtherColumns}
               leftColumns={dataManager.headerRenderLeftFixedColumns}
               rightColumns={dataManager.headerRenderRightFixedColumns}
-              onHeaderClick={props.onHeaderClick}
+              onHeaderClick={(col) =>
+                props.onHeaderClick?.(
+                  col,
+                  virtualProvider.cellSize.horizontal,
+                  virtualProvider.cellSize.vertical.length
+                )
+              }
             ></TableHeader>
           )}
 

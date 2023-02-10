@@ -1,11 +1,15 @@
-export class LinkedNode<N> {
+class LinkedNode<N> {
+  constructor(public node: N | null, root = false) {
+    this.isRoot = root;
+  }
+
+  public isRoot = false;
+
   public root: LinkedNode<N> | null = null;
 
   public next: LinkedNode<N> | null = null;
 
   public before: LinkedNode<N> | null = null;
-
-  public node: N | null = null;
 
   public getRoot(): LinkedNode<N> | null {
     return this.root;
@@ -15,7 +19,7 @@ export class LinkedNode<N> {
     return this.next;
   }
 
-  public setNext(next: LinkedNode<N>): void {
+  public setNext(next: LinkedNode<N> | null): void {
     this.next = next;
   }
 
@@ -35,11 +39,15 @@ export class LinkedNode<N> {
     this.before = null;
   }
 
-  public getNode(): N | null {
+  public getNode(): LinkedNode<N> {
+    return this;
+  }
+
+  public getValue(): N | null {
     return this.node;
   }
 
-  public setNode(node: N): void {
+  public setNodeValue(node: N): void {
     this.node = node;
   }
 
@@ -57,9 +65,105 @@ export class LinkedNode<N> {
       this.getBefore()?.removeNext();
     }
   }
+}
 
-  *[Symbol.iterator](): Generator<N | null> {
-    let cursor: LinkedNode<N> | null = this.getRoot();
+export class LinkedMap<T> {
+  private root?: LinkedNode<T>;
+
+  private first?: LinkedNode<T>;
+
+  private last?: LinkedNode<T>;
+
+  public get firstNode(): T | undefined | null {
+    return this.first?.getValue();
+  }
+
+  public get lastNode(): T | undefined | null {
+    return this.last?.getValue();
+  }
+
+  public addNode(node: T): void {
+    const linkedNode = new LinkedNode<T>(node);
+    if (!this.root) {
+      linkedNode.isRoot = true;
+      this.root = linkedNode;
+      this.first = linkedNode;
+      this.last = linkedNode;
+    } else {
+      this.last?.setNext(linkedNode);
+      this.last = linkedNode;
+    }
+  }
+
+  public unshiftNode(node: T): void {
+    if (!this.root) {
+      this.addNode(node);
+      return;
+    }
+    const linkedNode = new LinkedNode<T>(node, true);
+    if (this.first) {
+      linkedNode.setNext(this.first);
+      this.first.isRoot = false;
+      this.first = linkedNode;
+    }
+  }
+
+  public afterInsert(targetNode: T, node: T): void {
+    if (!this.root) {
+      this.addNode(node);
+    }
+    for (const getNode of this) {
+      if (getNode?.getValue() == targetNode) {
+        const nextNode = new LinkedNode<T>(node);
+        nextNode.setNext(getNode.getNext());
+        getNode.setNext(nextNode);
+        if (this.last === getNode && getNode) {
+          this.last = nextNode;
+        }
+        break;
+      }
+    }
+  }
+
+  public beforeInsert(targetNode: T, node: T): void {
+    if (!this.root) {
+      this.addNode(node);
+    }
+    for (const getNode of this) {
+      if (getNode?.getValue() == targetNode) {
+        const beforeNode = getNode.getBefore();
+        if (beforeNode) {
+          const nextNode = new LinkedNode<T>(node);
+          nextNode.setNext(getNode);
+          beforeNode.setNext(nextNode);
+          if (this.first === getNode && getNode) {
+            getNode.isRoot = false;
+            nextNode.isRoot = true;
+            this.first = nextNode;
+          }
+        }
+        break;
+      }
+    }
+  }
+
+  public removeNode(node: T, autoLink: boolean): void {
+    if (!this.root) {
+      return;
+    }
+    for (const getNode of this) {
+      if (getNode?.getValue() == node && getNode) {
+        getNode.removeNode(autoLink);
+        break;
+      }
+    }
+  }
+
+  *[Symbol.iterator](): Generator<LinkedNode<T> | null> {
+    if (!this.root) {
+      return;
+    }
+    let cursor: LinkedNode<T> | null = this.root;
     while (cursor) {
       yield cursor.getNode();
       cursor = cursor.getNext();

@@ -12,6 +12,7 @@
           :select-info="dataSelect"
           :select-mode="true"
           ref="dataTableRef"
+          @change="handleDataUpdate"
         ></DataTable>
         <div class="data-select-list">
           <div class="title">数据选择</div>
@@ -22,14 +23,28 @@
             class="data-select-container"
             :class="{ checked: currentIndex === index }"
           >
-            <div>名称: {{ item.name }}</div>
-            <div>选择数据: {{ item.selectRange.join(",") }}</div>
-            <div>
-              数据标记颜色:
-              <span
-                style="display: inline-block; width: 10px; height: 10px"
-                :style="{ background: item.color }"
-              ></span>
+            <div class="card-title">
+              <span>名称:</span>
+              <input v-model="item.name" class="card-input" />
+            </div>
+            <div v-for="(path, index) in item.path" :key="index" class="path-edit-card">
+              <img
+                src="../assets/close.svg"
+                class="edit-remove"
+                @click="handleRemoveItem(item.path, path)"
+              />
+              <div class="card-item">
+                <span>数据名称: </span>
+                <input v-model="path.pathName" class="card-input" />
+              </div>
+              <div>数据范围: [{{ path.selectRange.join(",") }}]</div>
+              <div class="card-item">
+                标记颜色:
+                <span
+                  style="display: inline-block; width: 10px; height: 10px; margin-left: 5px"
+                  :style="{ background: path.color }"
+                ></span>
+              </div>
             </div>
           </div>
         </div>
@@ -40,7 +55,7 @@
 
 <script lang="ts" setup>
 import { AnalysisData } from "@/types";
-import { DataSelectInfo } from "@/types/page";
+import { DataSelectInfo, PathData } from "@/types/page";
 import { defineProps, defineEmits, ref } from "vue";
 import DataTable from "./DataTable.vue";
 
@@ -53,25 +68,39 @@ interface IDataTableRef {
   updateSelectIndex: (index: number) => void;
 }
 
+const props = defineProps<IProps>();
+
 const dataTableRef = ref<IDataTableRef>();
 
 const currentIndex = ref<number | undefined>(0);
 
-const dataSelect = ref<Array<DataSelectInfo>>([
-  { name: "横向标题", path: [0, 0, 0, 0], selectKey: "horizontal", selectRange: [0, 0, 0, 0] },
-  { name: "标题", path: [0, 0, 0, 0], selectKey: "horizontal", selectRange: [0, 0, 0, 0] },
-  { name: "数据", path: [0, 0, 0, 0], selectKey: "data", selectRange: [0, 0, 0, 0] },
-]);
+const getPropsData = props.data.excelInfo.getSelectRangeData();
 
-const props = defineProps<IProps>();
+const dataSelect = ref<Array<DataSelectInfo>>(
+  getPropsData.length === 0
+    ? [
+        { name: "横向标题", path: [], selectKey: "horizontal" },
+        { name: "标题", path: [], selectKey: "horizontal" },
+        { name: "数据", path: [], selectKey: "data" },
+      ]
+    : getPropsData
+);
 
 const emits = defineEmits(["hide", "hided"]);
 
 const updateIndex = (index: number) => {
   if (dataTableRef.value) {
     dataTableRef.value.updateSelectIndex(index);
-  } 
+  }
   currentIndex.value = index;
+};
+
+const handleDataUpdate = () => {
+  props.data.excelInfo.updateSelectRange(JSON.parse(JSON.stringify(dataSelect.value)));
+};
+
+const handleRemoveItem = (path: Array<PathData>, item: PathData) => {
+  path.splice(path.indexOf(item), 1);
 };
 
 const handleHide = () => {

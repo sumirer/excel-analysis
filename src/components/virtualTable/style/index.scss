@@ -86,6 +86,7 @@ $virtual-name: "sapphire-virtual";
 
     &__table-scroll-body-wrapper {
         display: flex;
+        position: relative;
     }
 
     &__header-wrapper {

@@ -2,6 +2,7 @@ import ExcelParser from "./ExcelParser";
 import Excel from "exceljs";
 import { computed, reactive } from "vue";
 import { AnalysisData } from "@/types";
+import { DataSelectInfo } from "@/types/page";
 
 export interface IExcelInfo {
   name: string;
@@ -22,7 +23,14 @@ export class ExcelInfo {
     });
   }
 
-  public pickExcelSheetData = reactive<{ value: Excel.RowValues[] }>({ value: [] });
+  public excelPickDataRange = reactive<{ [key: string]: Array<DataSelectInfo> }>({});
+
+  public excelSheetData = reactive<{ [key: string]: Excel.RowValues[] }>({});
+
+  public pickExcelSheetData = computed<Excel.RowValues[]>(() => {
+    return this.excelSheetData[this.sheetName.name] || [];
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  }) as any;
 
   public dataRange = reactive({
     startX: 1,
@@ -52,12 +60,23 @@ export class ExcelInfo {
     };
   }
 
+  public updateSelectRange(range: Array<DataSelectInfo>): void {
+    this.excelPickDataRange[this.sheetName.name] = range;
+  }
+
+  public getSelectRangeData(): Array<DataSelectInfo> {
+    return JSON.parse(JSON.stringify(this.excelPickDataRange[this.sheetName.name] || []));
+  }
+
   public updateDefaultDataInfo(): void {
-    this.pickExcelSheetData.value = this.parser.getAllCellDataWithSheetName(this.sheetName.name);
-    let xLength = ((this.pickExcelSheetData.value[0] || this.pickExcelSheetData.value[1])?.length ??
+    this.excelSheetData[this.sheetName.name] = this.parser.getAllCellDataWithSheetName(
+      this.sheetName.name
+    );
+    const pickExcelSheetData = this.pickExcelSheetData.value || this.pickExcelSheetData;
+    let xLength = ((pickExcelSheetData[0] || pickExcelSheetData[1])?.length ??
       0) as number;
     xLength = xLength > 0 ? xLength : 0;
-    const yLength = this.pickExcelSheetData.value.length;
+    const yLength = pickExcelSheetData.length;
     this.setupDataRange([1, 1], [xLength, yLength]);
   }
 
@@ -116,6 +135,7 @@ export class ExcelInfo {
           fileName: this.fileName,
           sheetName: "",
         },
+        excelInfo: this,
       };
     }
     const result = this.getData(startX, endX, startY, endY);
@@ -126,6 +146,7 @@ export class ExcelInfo {
         fileName: this.fileName,
         sheetName: this.parser.workbook.getWorksheet(this.sheetName.name).name,
       },
+      excelInfo: this,
     };
   }) as unknown as AnalysisData;
 

@@ -12,6 +12,7 @@
       </div>
     </div>
     <svg
+      class="svg-box"
       @mouseout.left="handleMouseStop"
       @mousemove.left.stop.prevent="handleMouseMove($event)"
       @mouseup.left.stop.prevent="handleMouseStop"
@@ -29,14 +30,23 @@
         <rect
           :x="path.x"
           :y="path.y"
-          width="100"
+          width="180"
           height="100"
           fill="#ffbf6980"
           rx="10"
           ry="10"
           stroke="#ff9f1c"
         ></rect>
-        <text :x="path.x + 10" :y="path.y + 17" style="font-size: 14px">{{ path.name }}</text>
+        <text :x="path.x + 10" :y="path.y + 17" style="font-size: 14px; font-weight: bold">
+          {{ path.name }}
+        </text>
+        <text
+          :x="path.x + 10"
+          :y="path.y + 35"
+          style="font-size: 12px; color: #333; font-weight: bold"
+        >
+          {{ path.data?.desc.value }}
+        </text>
       </g>
       <path
         v-for="(line, index) in linkLine"
@@ -51,9 +61,16 @@
 
 <script lang="ts" setup>
 import { IFilterSource } from "@/excel/filter/Filter";
-import { GroupByFilter } from "@/excel/filter/GroupByFilter";
+import { GroupByFilter, SortFilter, SortByFilter, StartFilter } from "@/excel/filter";
 import { ISvgCardPath, ISvgPath } from "@/types";
-import { computed, ref, defineEmits, onMounted } from "vue";
+import { LinkedMap } from "@/utils/LinkedMap";
+import { computed, ref, defineEmits, onMounted, defineProps, reactive } from "vue";
+
+interface IProps {
+  data: LinkedMap<IFilterSource>;
+}
+
+const props = defineProps<IProps>();
 
 const defaultFilterList = [
   {
@@ -61,44 +78,12 @@ const defaultFilterList = [
     addCallback: () => addFilter(new GroupByFilter()),
   },
   {
-    name: "分组",
-    addCallback: () => addFilter(new GroupByFilter()),
+    name: "排序",
+    addCallback: () => addFilter(new SortFilter()),
   },
   {
-    name: "分组",
-    addCallback: () => addFilter(new GroupByFilter()),
-  },
-  {
-    name: "分组",
-    addCallback: () => addFilter(new GroupByFilter()),
-  },
-  {
-    name: "分组",
-    addCallback: () => addFilter(new GroupByFilter()),
-  },
-  {
-    name: "分组",
-    addCallback: () => addFilter(new GroupByFilter()),
-  },
-  {
-    name: "分组",
-    addCallback: () => addFilter(new GroupByFilter()),
-  },
-  {
-    name: "分组",
-    addCallback: () => addFilter(new GroupByFilter()),
-  },
-  {
-    name: "分组",
-    addCallback: () => addFilter(new GroupByFilter()),
-  },
-  {
-    name: "分组",
-    addCallback: () => addFilter(new GroupByFilter()),
-  },
-  {
-    name: "分组",
-    addCallback: () => addFilter(new GroupByFilter()),
+    name: "依据排序",
+    addCallback: () => addFilter(new SortByFilter()),
   },
   {
     name: "分组",
@@ -121,6 +106,7 @@ const createDefaultFilterData = () => {
       y: 100,
       name: "起始",
       id: Date.now() + Math.random() + "_0",
+      data: new StartFilter()
     },
   ];
   pathData.push({
@@ -134,16 +120,37 @@ const createDefaultFilterData = () => {
 
 const filters = ref<Array<ISvgCardPath<IFilterSource>>>(createDefaultFilterData());
 
+const weakMap = new WeakMap<IFilterSource, ISvgCardPath<IFilterSource>>();
+
 const addFilter = (filter: IFilterSource) => {
-  const last = filters.value[filters.value.length - 1];
-  filters.value[filters.value.length - 1] = {
+  const value = reactive(filter);
+  const createData = {
     x: 200,
     y: 100,
-    name: filter.name,
-    data: filter,
+    name: value.name,
+    data: value,
     id: Date.now() + Math.random() + "_" + (filters.value.length + 1),
   };
-  filters.value.push(last);
+  weakMap.set(value, createData);
+  props.data.addNode(value);
+  updateFilterData();
+  console.log(props.data);
+};
+
+const updateFilterData = () => {
+  const data: Array<ISvgCardPath<IFilterSource>> = [];
+  for (const node of props.data) {
+    const value = node?.getValue();
+    console.log('value', value);
+    if (value) {
+      if (weakMap.has(value)) {
+        const pathData = weakMap.get(value);
+        console.log('weak get', pathData);
+        if (pathData) data.push(pathData);
+      }
+    }
+  }
+  filters.value = [filters.value[0], ...data, filters.value[filters.value.length - 1]];
 };
 
 const emits = defineEmits(["focus"]);
@@ -153,34 +160,34 @@ const viewBox = ref<[number, number, number, number]>([0, 0, 800, 764]);
 const linkLine = computed<ISvgPath[][]>(() => {
   return filters.value.reduce((preValue, { x, y }, index) => {
     if (preValue.length === 0) {
-      preValue.push([{ x: x + 50, y: y + 100, cx: x + 50, cy: y + 150 }]);
+      preValue.push([{ x: x + 90, y: y + 100, cx: x + 50, cy: y + 150 }]);
     } else {
       const vBefore = preValue[preValue.length - 1];
       const lastPoint = vBefore[0];
-      const pointX = x + 50;
+      const pointX = x + 90;
       const pointY = y;
       let cPointX = pointX;
-      let cPointY = pointY - 50;
+      let cPointY = pointY - 90;
       if (lastPoint.x > pointX) {
         if (lastPoint.y > pointY) {
-          cPointX += 100;
+          cPointX += 180;
           lastPoint.cx -= 100;
         } else {
-          cPointX += 50;
-          lastPoint.cx -= 50;
+          cPointX += 90;
+          lastPoint.cx -= 90;
         }
       } else {
         if (lastPoint.y > pointY) {
-          cPointX -= 100;
+          cPointX -= 180;
           lastPoint.cx += 100;
         } else {
-          cPointX -= 50;
-          lastPoint.cx += 50;
+          cPointX -= 90;
+          lastPoint.cx += 90;
         }
       }
-      vBefore.push({ x: x + 50, y: y, cx: cPointX, cy: cPointY });
+      vBefore.push({ x: x + 90, y: y, cx: cPointX, cy: cPointY });
       if (index !== filters.value.length - 1) {
-        preValue.push([{ x: x + 50, y: y + 100, cx: x + 50, cy: y + 150 }]);
+        preValue.push([{ x: x + 90, y: y + 100, cx: x + 90, cy: y + 150 }]);
       }
     }
     return preValue;

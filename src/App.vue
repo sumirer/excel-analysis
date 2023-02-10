@@ -17,6 +17,7 @@
   <FilterConfigModal
     :visible="showFilterConfigVisible"
     @hide="showFilterConfigVisible = !showFilterConfigVisible"
+    :data="excel.filters"
   ></FilterConfigModal>
   <DataSelectDialog
     v-if="showSelect"
@@ -38,7 +39,7 @@
       <img class="tool-icon" src="./assets/filter.svg" />
       <span>配置漏斗</span>
     </div>
-    <div class="tool-item" @click="handleOpenSelect">
+    <div v-if="excel.excelList.length > 0" class="tool-item" @click="handleOpenSelect">
       <img class="tool-icon" src="./assets/filter.svg" />
       <span>选择数据</span>
     </div>
@@ -57,6 +58,7 @@ import DataPreviewDialog from "./views/DataPreviewDialog.vue";
 import FilterConfigModal from "./views/FilterConfigModal.vue";
 import { ExcelInfo } from "./excel/ExcelInfo";
 import DataSelectDialog from "./views/DataSelectDialog.vue";
+import "vue-select/dist/vue-select.css";
 
 export default defineComponent({
   name: "App",
@@ -76,6 +78,7 @@ export default defineComponent({
           sheetName: "",
         },
         col: [],
+        excelInfo: null as unknown as ExcelInfo
       },
       showModel: false,
       showPreview: false,
